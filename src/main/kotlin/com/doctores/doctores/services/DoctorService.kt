@@ -1,8 +1,7 @@
 package com.doctores.doctores.services
 
-import ch.qos.logback.core.net.SyslogOutputStream
 import com.doctores.doctores.domains.request.CreateDoctorRequest
-import com.doctores.doctores.domains.responses.CreateDoctorResponse
+import com.doctores.doctores.domains.responses.DoctorResponse
 import com.doctores.doctores.repositories.DoctorRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -10,66 +9,65 @@ import java.time.Instant
 import com.doctores.doctores.domains.entity.Doctor
 import org.springframework.dao.DataAccessException
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.repository.findByIdOrNull
 import utils.Especialidades
+import java.util.*
 
 @Service
 class DoctorService {
     @Autowired
     private lateinit var doctorRepository: DoctorRepository
 
-    // Dejemoslo Quieto
-    fun createDoctor(request: CreateDoctorRequest): CreateDoctorResponse {
+    fun createDoctor(request: CreateDoctorRequest): DoctorResponse {
+
+        Especialidades.values().find { it.especialidad == request.especialidad }
+            ?: throw Error("Especialidad not found")
+
         val doctor = doctorRepository.save(
-                Doctor(
-                        nombre = request.nombre,
-                        apellido = request.apellido,
-                        especialidad = request.especialidad,
-                        correo = request.correo,
-                        consultorio = request.consultorio,
-                )
-        )
-        return CreateDoctorResponse(
-                idDoctor = doctor.idDoctor,
+            Doctor(
                 nombre = request.nombre,
                 apellido = request.apellido,
                 especialidad = request.especialidad,
                 correo = request.correo,
                 consultorio = request.consultorio,
-                createAt = Instant.now()
+            )
+        )
+
+        return DoctorResponse(
+            message = "Doctor created successfully",
+            doctor = doctor
         )
     }
+    fun getAllDoctors(): List<Doctor> = doctorRepository.findAll()
 
-    // Dejemoslo quieto
-    fun getAllDoctors(): List<Doctor> {
-        var response = doctorRepository.findAll()
-        return response
+    fun getDoctorById(id: Long): DoctorResponse {
+        val doctor = doctorRepository.findByIdOrNull(id);
+        if (doctor !== null){
+            return DoctorResponse(message = "Doctor found", doctor = doctor)
+        }
+        return DoctorResponse(message = "Doctor does not exist")
     }
 
-    // Dejemoslo Quieto
-    fun getDoctorById(id: Long): List<Doctor> {
-        var doctor = doctorRepository.getByDoctorId(id)
-        return doctor
-    }
-
-    fun updateDoctor(id: Long, request: CreateDoctorRequest): String {
+    fun updateDoctor(id: Long, request: CreateDoctorRequest): DoctorResponse {
+        Especialidades.values().find { it.especialidad == request.especialidad }
+            ?: throw Error("Especialidad not found")
         try {
-            doctorRepository.updateDoctorById(id, request.especialidad)
-            return "La actualización fue exitosa"
-        } catch (ex: EmptyResultDataAccessException) {
-            // Si el doctor con el ID dado no existe en la base de datos
-            return "Error: No se encontró un doctor con el ID especificado"
-        } catch (ex: DataAccessException) {
-            return "La actualización fue exitosa"
+            val doctor = doctorRepository.findByIdOrNull(id) ?: throw Error("Doctor does not exist");
+            doctor.especialidad = request.especialidad;
+            val updateDoctor = doctorRepository.save(doctor)
+            return DoctorResponse("Doctor update", updateDoctor)
+        } catch (e: Error){
+            throw Error(e.message)
         }
     }
 
-    fun deleteDoctor(id: Long): String {
+    fun deleteDoctor(id: Long): DoctorResponse {
         try{
-            doctorRepository.deleteDoctorByIdDoctor(id)
-            return "El registro se ha borrado con exito"
-        } catch (ex: DataAccessException) {
-            return "El registro se ha borrado con exito"
+            val doctor = doctorRepository.findByIdOrNull(id) ?: throw Error("Doctor does not exist");
+            doctorRepository.deleteById(id)
+            return DoctorResponse("El registro se ha borrado con exito", doctor)
+        } catch (e: Error) {
+            return DoctorResponse(e.message)
         }
     }
 

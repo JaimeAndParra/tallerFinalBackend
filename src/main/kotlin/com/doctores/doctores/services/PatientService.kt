@@ -52,7 +52,8 @@ class PatientService {
 
     fun updatePatient(id: Long, request: PatientRequest): String {
         try {
-            patientRepository.updatePatientById(id, request.nombre, request.apellido, request.identificacion, request.telefono)
+            /* patientRepository.updatePatientById(id, request.nombre, request.apellido, request.identificacion, request.telefono)
+            */
             return "La actualización fue exitosa"
         } catch (ex: EmptyResultDataAccessException) {
             return "Error: No se encontró un doctor con el ID especificado"

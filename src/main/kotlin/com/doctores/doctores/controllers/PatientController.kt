@@ -30,7 +30,7 @@ class PatientController {
             @PathVariable("id") id: Long
     ): List<Patient> = patientService.getPatientById(id)
 
-    @PutMapping(UpdateDoctor)
+    @PutMapping(UpdatePatient)
     fun updateDoctor(
         @PathVariable("id") id: Long,
         @RequestBody @Validated request: PatientRequest

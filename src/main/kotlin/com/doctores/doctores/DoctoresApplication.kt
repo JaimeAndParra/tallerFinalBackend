@@ -10,8 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories
 @EnableJpaRepositories("com.doctores.doctores.repositories")
 @EntityScan("com.doctores.doctores.domains.entity")
 class DoctoresApplication
-
-
 fun main(args: Array<String>) {
 	runApplication<DoctoresApplication>(*args)
 }
