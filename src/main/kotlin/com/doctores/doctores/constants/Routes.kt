@@ -9,7 +9,7 @@ const val Patient = "$ApiV1/patients"
 
 // Doctors
 const val CreateDoctors = "$Doctor/create"
-const val GetDoctorById = "$Doctor/get/{id}"
+const val GetDoctorById = "$Doctor/{id}"
 const val UpdateDoctor = "$Doctor/update/{id}"
 const val DeleteDoctor = "$Doctor/delete/{id}"
 
