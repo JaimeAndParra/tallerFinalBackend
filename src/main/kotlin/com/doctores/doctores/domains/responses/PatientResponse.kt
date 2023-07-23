@@ -1,14 +1,7 @@
 package com.doctores.doctores.domains.responses
-
-
-import java.time.Instant
+import com.doctores.doctores.domains.entity.Patient
 
 data class PatientResponse (
-
-        val idPaciente: Long,
-        val nombre: String,
-        val apellido: String,
-        val identificacion: String,
-        val telefono: Long,
-        val created_at: Instant,
+        val message: String?,
+        val patient: Patient? = null,
 )

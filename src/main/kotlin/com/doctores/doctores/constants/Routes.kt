@@ -10,8 +10,8 @@ const val Patient = "$ApiV1/patients"
 // Doctors
 const val CreateDoctors = "$Doctor/create"
 const val GetDoctorById = "$Doctor/{id}"
-const val UpdateDoctor = "$Doctor/update/{id}"
-const val DeleteDoctor = "$Doctor/delete/{id}"
+const val UpdateDoctor = "$Doctor/{id}"
+const val DeleteDoctor = "$Doctor/{id}"
 
 // Appointment
 const val CreateAppointments = "$Appointment/create"
@@ -24,4 +24,4 @@ const val DeleteAppointment = "$Appointment/{id}"
 const val CreatePatients = "$Patient/create"
 const val GetPatientById = "$Patient/{id}"
 const val UpdatePatient = "$Patient/{id}"
-const val DeletePatient = "$Patient/delete/{id}"
+const val DeletePatient = "$Patient/{id}"
