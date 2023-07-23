@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.time.Instant
 import com.doctores.doctores.domains.entity.Doctor
+import com.doctores.doctores.domains.request.UpdateDoctorRequest
 import org.springframework.dao.DataAccessException
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.repository.findByIdOrNull
@@ -19,42 +20,48 @@ class DoctorService {
     private lateinit var doctorRepository: DoctorRepository
 
     fun createDoctor(request: CreateDoctorRequest): DoctorResponse {
-
-        Especialidades.values().find { it.especialidad == request.especialidad }
-            ?: throw Error("Especialidad not found")
-
-        val doctor = doctorRepository.save(
-            Doctor(
-                nombre = request.nombre,
-                apellido = request.apellido,
-                especialidad = request.especialidad,
-                correo = request.correo,
-                consultorio = request.consultorio,
+        try{
+            validEspecialidad(request.especialidad)
+            val doctor = doctorRepository.save(
+                Doctor(
+                    nombre = request.nombre,
+                    apellido = request.apellido,
+                    especialidad = request.especialidad,
+                    correo = request.correo,
+                    consultorio = request.consultorio,
+                )
             )
-        )
-
-        return DoctorResponse(
-            message = "Doctor created successfully",
-            doctor = doctor
-        )
+            return DoctorResponse(
+                message = "Doctor created successfully",
+                doctor = doctor
+            )
+        }catch (e: Error){
+            throw Error(e.message)
+        }
     }
     fun getAllDoctors(): List<Doctor> = doctorRepository.findAll()
 
-    fun getDoctorById(id: Long): DoctorResponse {
+    fun getDoctorById(id: Long): Doctor {
         val doctor = doctorRepository.findByIdOrNull(id);
         if (doctor !== null){
-            return DoctorResponse(message = "Doctor found", doctor = doctor)
+            return doctor
         }
-        return DoctorResponse(message = "Doctor does not exist")
+        throw Error("Doctor not found")
     }
 
-    fun updateDoctor(id: Long, request: CreateDoctorRequest): DoctorResponse {
-        Especialidades.values().find { it.especialidad == request.especialidad }
-            ?: throw Error("Especialidad not found")
+    fun updateDoctor(id: Long, request: UpdateDoctorRequest): DoctorResponse {
         try {
-            val doctor = doctorRepository.findByIdOrNull(id) ?: throw Error("Doctor does not exist");
-            doctor.especialidad = request.especialidad;
-            val updateDoctor = doctorRepository.save(doctor)
+            val doctor = getDoctorById(id)
+            val newDoctor = Doctor(
+                idDoctor = doctor.idDoctor,
+                nombre = if (request.nombre!==null) request.nombre else doctor.nombre,
+                apellido = if (request.apellido!==null) request.apellido else doctor.apellido,
+                especialidad = if (request.especialidad!==null) request.especialidad else doctor.especialidad,
+                consultorio = if (request.consultorio!==null) request.consultorio else doctor.consultorio,
+                correo = if (request.correo!==null) request.correo else doctor.correo,
+            )
+            validEspecialidad(newDoctor.especialidad)
+            val updateDoctor = doctorRepository.save(newDoctor)
             return DoctorResponse("Doctor update", updateDoctor)
         } catch (e: Error){
             throw Error(e.message)
@@ -63,12 +70,17 @@ class DoctorService {
 
     fun deleteDoctor(id: Long): DoctorResponse {
         try{
-            val doctor = doctorRepository.findByIdOrNull(id) ?: throw Error("Doctor does not exist");
+            val doctor = getDoctorById(id)
             doctorRepository.deleteById(id)
             return DoctorResponse("El registro se ha borrado con exito", doctor)
         } catch (e: Error) {
             return DoctorResponse(e.message)
         }
+    }
+
+    fun validEspecialidad(especialidad: String){
+        Especialidades.values().find { it.especialidad == especialidad }
+            ?: throw Error("Especialidad not found")
     }
 
 }

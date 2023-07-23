@@ -3,6 +3,7 @@ package com.doctores.doctores.controllers
 import com.doctores.doctores.constants.*
 import com.doctores.doctores.domains.entity.Doctor
 import com.doctores.doctores.domains.request.CreateDoctorRequest
+import com.doctores.doctores.domains.request.UpdateDoctorRequest
 import com.doctores.doctores.domains.responses.DoctorResponse
 import com.doctores.doctores.domains.responses.HealthCheckResponse
 import com.doctores.doctores.services.DoctorService
@@ -40,12 +41,18 @@ class DoctorController {
     @GetMapping(GetDoctorById)
     fun getDoctorById(
             @PathVariable("id") id: Long
-    ): DoctorResponse = doctorService.getDoctorById(id)
+    ): DoctorResponse {
+        try{
+            return DoctorResponse("Doctor $id found", doctorService.getDoctorById(id))
+        }catch(e: Error){
+            return DoctorResponse(e.message)
+        }
+    }
 
     @PutMapping(UpdateDoctor)
     fun updateDoctor(
         @PathVariable("id") id: Long,
-        @RequestBody @Validated request: CreateDoctorRequest
+        @RequestBody @Validated request: UpdateDoctorRequest
     ): ResponseEntity<DoctorResponse> {
         try{
             return ResponseEntity(doctorService.updateDoctor(id, request), HttpStatus.ACCEPTED)
