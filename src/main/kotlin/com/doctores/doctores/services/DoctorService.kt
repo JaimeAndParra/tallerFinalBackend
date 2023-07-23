@@ -5,14 +5,10 @@ import com.doctores.doctores.domains.responses.DoctorResponse
 import com.doctores.doctores.repositories.DoctorRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import java.time.Instant
 import com.doctores.doctores.domains.entity.Doctor
 import com.doctores.doctores.domains.request.UpdateDoctorRequest
-import org.springframework.dao.DataAccessException
-import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.data.repository.findByIdOrNull
 import utils.Especialidades
-import java.util.*
 
 @Service
 class DoctorService {
@@ -42,7 +38,7 @@ class DoctorService {
     fun getAllDoctors(): List<Doctor> = doctorRepository.findAll()
 
     fun getDoctorById(id: Long): Doctor {
-        val doctor = doctorRepository.findByIdOrNull(id);
+        val doctor = doctorRepository.findByIdOrNull(id)
         if (doctor !== null){
             return doctor
         }
@@ -69,12 +65,12 @@ class DoctorService {
     }
 
     fun deleteDoctor(id: Long): DoctorResponse {
-        try{
+        return try{
             val doctor = getDoctorById(id)
             doctorRepository.deleteById(id)
-            return DoctorResponse("El registro se ha borrado con exito", doctor)
+            DoctorResponse("El registro se ha borrado con exito", doctor)
         } catch (e: Error) {
-            return DoctorResponse(e.message)
+            DoctorResponse(e.message)
         }
     }
 

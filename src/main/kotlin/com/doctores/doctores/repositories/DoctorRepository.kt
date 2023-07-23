@@ -10,5 +10,4 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 interface DoctorRepository : JpaRepository<Doctor, Long> {
-
 }

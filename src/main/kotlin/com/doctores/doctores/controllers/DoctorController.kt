@@ -5,7 +5,6 @@ import com.doctores.doctores.domains.entity.Doctor
 import com.doctores.doctores.domains.request.CreateDoctorRequest
 import com.doctores.doctores.domains.request.UpdateDoctorRequest
 import com.doctores.doctores.domains.responses.DoctorResponse
-import com.doctores.doctores.domains.responses.HealthCheckResponse
 import com.doctores.doctores.services.DoctorService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -31,21 +30,19 @@ class DoctorController {
 
     @PostMapping(CreateDoctors)
     fun createDoctor(@RequestBody @Validated request: CreateDoctorRequest): ResponseEntity<DoctorResponse> {
-        try {
-            return ResponseEntity(doctorService.createDoctor(request), HttpStatus.CREATED)
+        return try {
+            ResponseEntity(doctorService.createDoctor(request), HttpStatus.CREATED)
         } catch (e: Error) {
-            return ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
+            ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
         }
     }
 
     @GetMapping(GetDoctorById)
-    fun getDoctorById(
-            @PathVariable("id") id: Long
-    ): DoctorResponse {
-        try{
-            return DoctorResponse("Doctor $id found", doctorService.getDoctorById(id))
+    fun getDoctorById(@PathVariable("id") id: Long): DoctorResponse {
+        return try{
+            DoctorResponse("Doctor $id found", doctorService.getDoctorById(id))
         }catch(e: Error){
-            return DoctorResponse(e.message)
+            DoctorResponse(e.message)
         }
     }
 
@@ -54,21 +51,19 @@ class DoctorController {
         @PathVariable("id") id: Long,
         @RequestBody @Validated request: UpdateDoctorRequest
     ): ResponseEntity<DoctorResponse> {
-        try{
-            return ResponseEntity(doctorService.updateDoctor(id, request), HttpStatus.ACCEPTED)
+        return try{
+            ResponseEntity(doctorService.updateDoctor(id, request), HttpStatus.ACCEPTED)
         }catch (e: Error){
-            return ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
+            ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
         }
     }
 
     @DeleteMapping(DeleteDoctor)
-    fun deleteDoctor(
-            @PathVariable("id") id: Long
-    ): ResponseEntity<DoctorResponse> {
-        try{
-            return ResponseEntity(doctorService.deleteDoctor(id), HttpStatus.ACCEPTED)
+    fun deleteDoctor(@PathVariable("id") id: Long): ResponseEntity<DoctorResponse> {
+        return try{
+            ResponseEntity(doctorService.deleteDoctor(id), HttpStatus.ACCEPTED)
         }catch (e: Error){
-            return ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
+            ResponseEntity(DoctorResponse(message=e.message), HttpStatus.BAD_REQUEST)
         }
     }
 }
