@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import com.doctores.doctores.domains.entity.Doctor
 import com.doctores.doctores.domains.request.UpdateDoctorRequest
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.data.repository.findByIdOrNull
 import utils.Especialidades
 
@@ -65,10 +66,12 @@ class DoctorService {
     }
 
     fun deleteDoctor(id: Long): DoctorResponse {
-        return try{
+        return try {
             val doctor = getDoctorById(id)
             doctorRepository.deleteById(id)
             DoctorResponse("El registro se ha borrado con exito", doctor)
+        }catch(e: DataIntegrityViolationException){
+            DoctorResponse("No se puede borrar el doctor. Tiene una cita asignada.")
         } catch (e: Error) {
             DoctorResponse(e.message)
         }

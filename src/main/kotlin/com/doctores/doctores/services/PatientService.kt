@@ -44,6 +44,13 @@ class PatientService {
         }
         throw Error("Patient not found")
     }
+    fun getPatientByIdentificacion(identificacion: String): Patient{
+        val patient = patientRepository.getPatientByIdentificacion(identificacion)
+        if (patient !== null){
+            return patient
+        }
+        throw Error("Patient not found")
+    }
 
     fun deletePatientById(id:Long): PatientResponse {
         return try{

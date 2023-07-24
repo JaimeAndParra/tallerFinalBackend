@@ -1,16 +1,14 @@
 package com.doctores.doctores.domains.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Id
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name="citas")
 open class Appointment (
         @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name=" id_cita")
-        open var idcita: Long=0,
+        open var idcita: Long=1,
 
         @Column(name="horario")
         open var horario: String,
